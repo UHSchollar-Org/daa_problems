@@ -129,3 +129,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+first_problem/doc/doc.aux
+first_problem/doc/doc.fdb_latexmk
+first_problem/doc/doc.fls
+first_problem/doc/doc.synctex.gz
+first_problem/doc/doc.tex
