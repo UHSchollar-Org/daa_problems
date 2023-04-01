@@ -58,12 +58,4 @@ def FeaturesBySets(st_list, failedInP):
             fbs[st_list[i]][1] += 1
     
     return fbs
-                    
-    
-# def CountOnes(list : List[int]):
-#     result = 0
-#     for item in list:
-#         if item == 1:
-#             result+=1
-#     return result
  
