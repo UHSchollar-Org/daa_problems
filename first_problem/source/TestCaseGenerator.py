@@ -14,8 +14,7 @@ def Generate(test_cases_count : int, max_students_count : int, path):
         groups_count = rnd.randint(1,lenght)
         
         student_list = []
-        failedInP : List[bool] = []
-        failedInR : List[bool] = []
+        failedInP : List[int] = []
         
         failedInP_count = 0
         failedInR_count = 0
@@ -24,19 +23,17 @@ def Generate(test_cases_count : int, max_students_count : int, path):
             student_list.append(rnd.randint(1,groups_count))
             curse_failed = rnd.randint(1,2)
             if curse_failed == 1:
-                failedInP.append(True)
+                failedInP.append(1)
                 failedInP_count += 1
-                failedInR.append(False)
             else:
-                failedInP.append(False)
+                failedInP.append(0)
                 failedInR_count += 1
-                failedInR.append(True)
                 
         k = rnd.randint(1, max(groups_count, failedInP_count, failedInR_count))
         
-        Write_File(path,k,student_list,failedInP,failedInR)
+        Write_File(path,k,student_list,failedInP)
 
-def Write_File(path, k, student_list, failedInP, failedInR):
+def Write_File(path, k, student_list, failedInP):
     with open(path,"a+") as file: 
         file.write("Case\n")
         file.write(f"{k}\n")
@@ -46,9 +43,7 @@ def Write_File(path, k, student_list, failedInP, failedInR):
         for i in range(len(failedInP)):
             file.write(f"{failedInP[i]} ")
         file.write(f"\n")
-        for i in range(len(failedInR)):
-            file.write(f"{failedInR[i]} ")
-        file.write(f"\n")
+        
 
 if __name__ == '__main__':
     path = Path.cwd() / f"first_problem/test_cases"    
