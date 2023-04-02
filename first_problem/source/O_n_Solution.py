@@ -41,6 +41,10 @@ def Solve(G : List[int], F : List[int], k : int) -> int:
         elif feat_by_sets[g][0] < P_rem and feat_by_sets[g][1] >= R_rem:
             if feat_by_sets[g][0] + R_rem >= k:
                 sol +=1
+        
+        elif feat_by_sets[g][0] < P_rem and feat_by_sets[g][1] < R_rem:
+            if feat_by_sets[g][0] + feat_by_sets[g][1] >= k:
+                sol += 1
             
     return sol   
             
@@ -59,3 +63,7 @@ def FeaturesBySets(st_list, failedInP):
     
     return fbs
  
+g = [1, 1, 1, 2, 1, 1, 2]
+p = [1, 1, 1, 1, 0, 0, 0]
+
+print(Solve(g,p,5))
