@@ -16,7 +16,9 @@ def Solve(studentsList : List[int], failedInP : List[bool], failedInR : List[boo
     """
     
     sets : List[List[int]] = []
-    setsCount : int = int(len(studentsList)/k + 2)
+    setsCount : int = int(len(studentsList)/k + 1)
+    if (len(studentsList)%k)!=0:
+        setsCount += 1
     for _ in range(setsCount):
         sets.append([])
     student : int = 0
@@ -47,13 +49,26 @@ def KGroupsCount(sets, k):
             result+=1
     return result
 
+
 def Insert(set : List[int], studentsList, failedInP, failedInR, k, student : int):
     if len(set)== 0:
         set.append(student)
         return True
-    if  len(set) < k and (studentsList[student] == studentsList[set[0]] or 
-                          failedInP[student] == failedInP[set[0]] or
-                          failedInR[student] == failedInR[set[0]]):
-        set.append(student)
-        return True
+    if  len(set) < k:
+        same_group = True
+        for i in range(len(set)):
+            if studentsList[student]!=studentsList[set[i]]:
+                same_group = False
+                break
+        if same_group:
+            set.append(student)
+            return True
+        same_test_failed = True
+        for i in range(len(set)):
+            if failedInP[student] != failedInP[set[i]]:
+                same_test_failed = False
+                break
+        if same_test_failed:
+            set.append(student)
+            return True
     return False
