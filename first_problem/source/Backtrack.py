@@ -1,6 +1,6 @@
 from typing import List
 
-def Solve(studentsList : List[int], failedInP : List[int], k : int) -> int:
+def Solve(G : List[int], F : List[int], k : int) -> int:
     """Returns a list of sets of size k that satisfy that:
             *In one set, all students are from the same group
             *All students failed for the same exam P or R
@@ -15,17 +15,20 @@ def Solve(studentsList : List[int], failedInP : List[int], k : int) -> int:
     """
     
     sets : List[List[int]] = []
-    setsCount : int = int(len(studentsList)/k + 1)
-    if (len(studentsList)%k)!=0:
+    setsCount : int = int(len(G)//k + 1)
+    
+    if (len(G) % k) != 0:
         setsCount += 1
+    
     for _ in range(setsCount):
         sets.append([])
+    
     student : int = 0
     
-    return Backtrack(student, studentsList, failedInP, k, sets)
+    return Backtrack(student, G, F, k, sets)
 
-def Backtrack(student, studentsList : List[int], failedInP : List[int], k : int, sets: List[List[int]]):
-    if student == len(studentsList):
+def Backtrack(element, G : List[int], F : List[int], k : int, sets: List[List[int]]):
+    if element == len(G):
         return KGroupsCount(sets, k)
     
     maxKGroup : int = 0
@@ -33,10 +36,12 @@ def Backtrack(student, studentsList : List[int], failedInP : List[int], k : int,
     for i in range(len(sets)):
         if len(sets[i]) == k:
             continue
-        if Insert(sets[i], studentsList, failedInP, k, student):
-            maxKGroup = max(maxKGroup,Backtrack(student+1, studentsList, failedInP, k, sets))
-            sets[i].remove(student)
-            if(maxKGroup==len(studentsList)/k):
+        
+        if Insert(sets[i], G, F, k, element):
+            maxKGroup = max(maxKGroup,Backtrack(element+1, G, F, k, sets))
+            sets[i].remove(element)
+            
+            if(maxKGroup==len(G)/k):
                 break
             
     return maxKGroup
@@ -49,25 +54,33 @@ def KGroupsCount(sets, k):
     return result
 
 
-def Insert(set : List[int], studentsList, failedInP, failedInR, k, student : int):
+def Insert(set : List[int], G, F, k, element : int):
     if len(set)== 0:
-        set.append(student)
+        set.append(element)
         return True
+    
     if  len(set) < k:
         same_group = True
+        
         for i in range(len(set)):
-            if studentsList[student]!=studentsList[set[i]]:
+            if G[element] != G[set[i]]:
                 same_group = False
                 break
+            
+            
         if same_group:
-            set.append(student)
+            set.append(element)
             return True
+        
         same_test_failed = True
+        
         for i in range(len(set)):
-            if failedInP[student] != failedInP[set[i]]:
+            if F[element] != F[set[i]]:
                 same_test_failed = False
                 break
+            
         if same_test_failed:
-            set.append(student)
+            set.append(element)
             return True
+        
     return False

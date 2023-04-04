@@ -1,0 +1,271 @@
+\documentclass{article}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\setlength{\parindent}{0cm}
+\lstset{
+    numbers=left,
+    numbersep=15pt,
+    numberfirstline = false,
+    breaklines=true,
+}
+
+\begin{document}
+
+\title{Primer Problema DAA}
+\author{Karlos Alejandro Alfonso Rodríguez \\ Karel Camilo Manresa Leon}
+\maketitle
+
+\newpage
+
+\section*{Problema}
+
+Leandro es profesor de programación. En sus ratos libres, le gusta divertirse con las 
+estadísticas de sus pobres estudiantes reprobados. Los estudiantes están separados en n grupos. 
+Casualmente este año, todos los estudiantes reporbaron alguno (uno y solo uno) de los dos exámenes 
+finales $P$ (POO) y $R$ (Recursividad).
+
+Esta tarde, Leandro decide entretenerse separando a los estudiantes
+suspensos en conjuntos de tamaño k que cumplan lo siguiente: En un mismo conjunto, todos los estudiantes 
+son del mismo grupo $i$ $(1 \leq i \leq n)$ o suspendieron por el mismo exámen $P$ o $R$.
+
+Conociendo el grupo y prueba suspensa de cada estudiante y el tamaño de los conjuntos, 
+ayude a Leandro a saber cuántos conjuntos de estudiantes suspensos puede formar.
+
+\section*{Problema en términos matemático}
+
+Se tiene una lista $G$, donde $G[i]$ indica el conjunto al que pertenece el entero $i$.
+Además se tiene otra lista binaria $F$, donde $F[i]$ indica la presencia o no de una característica en 
+el entero $i$. De modo tal que para un entero $i$ se tiene $G[i]$ y $F[i]$, que 
+indican: conjunto al que pertenece $i$ y presencia o no de una característica para $i$, respectivamente.
+
+Dado un entero $k \geq 1$ y las listas $G$ y $F$, se desea conocer cuantos conjuntos de tamaño $k$ se pueden formar 
+de modo que $\forall i,j \in k_t$ se cumpla $G[i] = G[j] \vee F[i] = F[j]$.
+
+Sea:
+\begin{itemize}
+    \item $|G|$ = n.
+    \item $P$ conjunto de todos los elementos que cumplen $F[i] = 1$.
+    \item $R$ conjunto de todos los elementos que cumplen $F[i] = 0$.
+\end{itemize}
+
+\section*{Primer enfoque}
+
+El primer enfoque pensado para la solución del problema es hacer un $Backtrack$, que
+compruebe todas las posibles formas de construir subconjuntos disjuntos
+válidos ($G[i] = G[j] \vee F[i] = F[j]$) de tamaño máximo $k$. Luego se selecciona como 
+respuesta la forma que contenga la mayor cantidad de subconjuntos de tamaño $k$.
+
+La cantidad máxima de subconjuntos de tamaño $k$ que se pueden realizar con $n$ elementos
+es $\lfloor \frac{n}{k} \rfloor$. En este caso debemos añadir dos conjuntos más ya que 
+el resto resultante de hacer parte entera por debajo, en el peor caso tiene elementos de 
+ambas característica, y deben agruparse en conjuntos diferentes. 
+
+\subsection*{Correctitud}
+
+Esta solución es correcta ya que comprueba todas las formas posibles de construir los subconjuntos
+y se queda con la mejor. 
+
+\subsection*{Pseudocódigo}
+
+\begin{lstlisting}[language = Python]
+def backtrack(element, G, F, k, subsets):
+    if element == |G|:
+        return KSizeSets(subsets, k)
+    
+    sol = 0
+    for i from 0 to |subsets|:
+        if |subsets[i]| == k:
+            continue
+        
+        if Insert(subsets[i], element):
+            sol = max(sol, backtrack(element+1, G, F, k, subsets))
+            subsets[i].Remove(element)
+            if sol == |G|//k:
+                break
+    
+    return sol
+
+\end{lstlisting}
+
+\subsection*{Complejidad temporal}
+
+% El costo temporal de ejecutar el caso de parada (2-3) es:
+% \begin{eqnarray*}
+%     &=& O(|subsets|)\\
+%     &=& O(\lfloor \frac{n}{k} \rfloor + 2)\\
+%     &=& O(\frac{n}{k})
+% \end{eqnarray*}
+
+%Analicemos el costo del ciclo (6-14). Dicho ciclo se ejecuta $|subsets|$ veces,
+%lo cual es $O(\frac{n}{k})$, luego el llamado a $Insert$ tiene un costo de $O(k)$,
+%ya que $k$ es el tamaño máximo que puede alcanzar cada conjunto. El costo de 
+%eliminar el elemento del subconjunto es $O(k)$. Por tanto el ciclo tiene un costo
+%de $O(\frac{n}{k}k) = O(n)$.
+
+
+
+%Por cada elemento se realiza un llamado recursivo de la función inicial, entonces 
+%tendríamos $n$ llamados con costo $O(n)$ cada uno, lo que equivale $O(\prod_{i=1}^{n} n) = O(n^n)$.
+
+En el algoritmo recursivo anterior tenemos que $f(n) = 2k$ ya que $Insert$ y $Remove$
+recorren $k$ elementos cada uno. Luego sea $m = |G|$, tenemos que se realizan $\lfloor \frac{m}{k}\rfloor$
+llamados a la recursividad. Cada llamado se realiza con un elemento menos, por lo que 
+$T(n) = \lfloor \frac{m}{k} \rfloor T(n-1) + 2k$. 
+
+Entonces: 
+\begin{eqnarray*}
+    T(n) &=& 2k + \lfloor \frac{m}{k} \rfloor(2k + \lfloor \frac{m}{k}\rfloor(2k + \lfloor \frac{m}{k}\rfloor(\dots)))\\
+    T(n) &=& (\frac{m}{k})^m + 2(\frac{m}{k})^{m-1} + \dots + 2k \\
+    T(n) &\leq& (\frac{m}{k})^m + 2(\frac{m}{k})^m + \dots + 2k^m = O(\frac{m^m}{k^m})\\
+\end{eqnarray*}
+
+
+\section*{Segundo enfoque}
+
+El segundo enfoque pensado para la solución del problema es hacer un algoritmo greedy.
+Primeramente se intenta crear todos los subconjuntos posibles priorizando la existencia o no
+de la característica; o sea, la solución será la cantidad de subconjuntos de tamño $k$ que 
+se pueden formar con elementos que cumplan la característica más la cantidad de subconjuntos 
+que se pueden formar con elementos que no la cumplan. Luego se comprueba si con los elementos 
+restantes se puede formar otro subconjunto basado en el conjunto inicial al que pertenecen dichos
+elementos.
+
+\subsection*{Correctitud}
+
+Para demostrar la correctitud de esta solución, se debe demostrar que siempre 
+que se creen los subconjuntos basados en las características, se obtendrá un total de 
+$\lfloor \frac{n}{k} \rfloor - 1$ o $\lfloor \frac{n}{k} \rfloor$ subconjuntos de tamaño 
+$k$. En caso de obtenerse $\lfloor \frac{n}{k} \rfloor - 1$ subconjuntos y la respuesta 
+correcta ser $\lfloor \frac{n}{k} \rfloor$, se debe probar que siempre hay una manera de 
+armar un subconjunto basado en el conjunto inicial de los elementos.
+
+Sea $p = |P|$ y $r = |R|$, además $p'$ y $r'$ son la cantidad de conjuntos de tamaño $k$
+que se pueden formar con los elementos de $P$ y $R$ respectivamente.
+Demostremos que $\lfloor \frac{n}{k} \rfloor - 1 \leq p' + r' \leq \lfloor \frac{n}{k} \rfloor$
+\begin{proof}
+    
+    Se sabe que
+    \begin{equation*}
+        p + r = n
+    \end{equation*}
+    luego si aplicamos el algoritmo de división sobre $p$ y $r$ con $k$ de divisor se obtiene
+    \begin{equation*}
+        kp' + p_r + kr' + r_r = n
+    \end{equation*}
+    donde $p'$ y $r'$ son precisamente la cantidad de subconjuntos de tamaño $k$ que se pueden
+    formar con los conjuntos $P$ y $R$ respectivamente. Si multiplicamos la ecuación anterior 
+    por $k$ obtenemos
+    \begin{equation*}
+        p' + r' + \frac{p_r + r_r}{k} = \frac{n}{k}
+    \end{equation*}
+    si aplicamos la función parte entera por debajo a la ecuación
+    \begin{equation*}
+        \lfloor p' + r' + \frac{p_r + r_r}{k} \rfloor = \lfloor \frac{n}{k}\rfloor
+    \end{equation*}
+    y como $p'$ y $r'$ son enteros se cumple que $\lfloor p' \rfloor = p'$ y 
+    $\lfloor r' \rfloor = r'$, por tanto 
+    \begin{equation*}
+        p' + r' + \lfloor \frac{p_r + r_r}{k} \rfloor = \lfloor \frac{n}{k} \rfloor
+    \end{equation*}
+
+    Si $0 \leq \lfloor \frac{p_r + r_r}{k} \rfloor \leq 1$ entonces 
+    $\lfloor \frac{n}{k} \rfloor - 1 \leq p' + r' \leq \lfloor \frac{n}{k} \rfloor$. Demostremos 
+    entonces que $0 \leq \lfloor \frac{p_r + r_r}{k} \rfloor \leq 1$.
+
+    \begin{proof}
+        Como $p_r$ y $r_r$ son enteros positivos, su suma será un entero positivo, por tanto al hacer
+        $\frac{p_r + r_r}{k}$ se obtiene un número positivo ya que $k$ es un entero positivo también. 
+        Luego al aplicarle parte entera por debajo se obtiene un entero positivo, luego 
+        $0 \leq \lfloor\frac{p_r+r_r}{k}\rfloor$.
+
+        Se tiene además que 
+        \begin{eqnarray*}
+            p_r &<& k\\
+            r_r &<& k\\
+            p_r + r_r &<& 2k\\
+            \frac{p_r+r_r}{k} &<& 2\\
+            \lfloor \frac{p_r+r_r}{k} \rfloor &\leq& 1
+        \end{eqnarray*}
+        Luego $0 \leq \lfloor \frac{p_r + r_r}{k} \rfloor \leq 1$.
+    \end{proof}
+    Entonces se cumple que $\lfloor \frac{n}{k} \rfloor - 1 \leq p' + r' \leq \lfloor \frac{n}{k} \rfloor$.
+\end{proof}
+
+Ahora se debe demostrar que siempre que la respuesta arrojada por el algoritmo anterior
+sea $\lfloor \frac{n}{k} \rfloor - 1$ y la correcta sea $\lfloor \frac{n}{k} \rfloor$ se puede 
+formar un nuevo subconjunto con el resto de los conjuntos $P$ y $R$.
+
+La forma de hacer esto pensada fue: por cada conjunto inicial $g$ si se cumple que 
+$min(g[0], r_r) + min(g[1], p_r) \geq k$ entonces se puede formar otro subconjunto válido de tamaño
+$k$ en ese grupo, y será el último (en caso contrario se puedieran formar al menos dos nuevos subconjuntos, 
+lo cual es una contradicción ya que la cantidad máxima posible es $\lfloor \frac{n}{k} \rfloor$), 
+donde $g[0]$ es la cantidad de elementos del grupo $g$ que no cumplen la característica 
+y $g[1]$ los de $g$ que la cumplen. A pesar de que esta forma de armar un nuevo subconjunto es válida, no es 
+factible aplicarla luego de haber agrupado por característica, ya que no necesariamente con los elementos 
+restantes se podrá lograr. A continuación un caso que prueba esto:
+
+Sea $G = [1,1,2,2,3,3]$, $F = [0,1,0,1,0,1]$ y $k = 2$. Para este caso es fácil comprobar que la respuesta 
+es $sol = 3$. Si seguimos el algoritmo planteado, primeramente agrupamos por característica, obteniendo 2 
+subconjuntos de tamaño 2. Luego si se intenta formar un nuevo subconjunto basado en los grupos iniciales no 
+es posible ya que cada resto pertenece a un grupo distinto. Por tanto este enfoque no es válido. 
+\newpage
+\subsection*{Pseudocódigo}
+
+\begin{lstlisting}[language = Python]
+def solve(G, F, k):
+    sol = 0
+
+    p,r = Count 1s,0s in F
+    
+    sol += p//k
+    sol += r//k
+
+    p_r = p%k
+    r_r = r%k
+
+    if p_r + r_r < k:
+        return sol
+    
+    fbs = FeaturesBySets(G, F)
+
+    for g in fbs:
+        if min(g[0], p_r) + min(g[1], r_r) >= k:
+            sol+=1
+    
+            return sol
+
+\end{lstlisting}
+
+La función $FeaturesBySets(G, F)$ crea un diccionario donde dado un grupo inicial
+devuelve la cantidad de elementos que tiene que cumplen la característica y 
+los que no la cumplen.
+
+\subsection*{Complejidad temporal}
+
+La complejidad temporal de ejecutar la línea \textbf{4} es $O(|F|) = O(|G|) = O(n)$.
+Luego ejecutar las líneas \textbf{2, 6-13} tiene costo $O(1)$. El diccionario $fbs$ se 
+puede crear en tiempo $O(|G|) = O(n)$; y hacer el ciclo de las líneas \textbf{17-19} 
+tiene costo $O(cantGrupos)$ y como $cantGrupos \leq n$, entonces tiene costo $O(n)$.
+Finalmente $T(n) = 3O(n) = O(n)$.
+
+\section*{Tercer enfoque}
+
+
+
+\subsection*{Correctitud}
+
+\subsection*{Pseudocódigo}
+
+\subsection*{Complejidad temporal}
+
+\section*{Tester}
+
+\subsection*{Generador de casos de pueba}
+
+\subsubsection*{Pseudocódigo}
+
+\end{document}
+

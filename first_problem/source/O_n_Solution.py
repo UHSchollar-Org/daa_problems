@@ -31,20 +31,8 @@ def Solve(G : List[int], F : List[int], k : int) -> int:
     feat_by_sets = FeaturesBySets(G, F)
     
     for g in feat_by_sets:
-        if feat_by_sets[g][0] >= P_rem and feat_by_sets[g][1] >= R_rem:
-            sol += 1
-            
-        elif feat_by_sets[g][0] >= P_rem and feat_by_sets[g][1] < R_rem:
-            if P_rem + feat_by_sets[g][1] >= k:
-                sol += 1
-                
-        elif feat_by_sets[g][0] < P_rem and feat_by_sets[g][1] >= R_rem:
-            if feat_by_sets[g][0] + R_rem >= k:
-                sol +=1
-        
-        elif feat_by_sets[g][0] < P_rem and feat_by_sets[g][1] < R_rem:
-            if feat_by_sets[g][0] + feat_by_sets[g][1] >= k:
-                sol += 1
+        if min(feat_by_sets[g][0],P_rem) + min(feat_by_sets[g][1], R_rem) >= k:
+            sol+=1
             
     return sol   
             
