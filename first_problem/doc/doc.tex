@@ -253,7 +253,54 @@ Finalmente $T(n) = 3O(n) = O(n)$.
 
 \section*{Tercer enfoque}
 
-El tercer enfoque consiste en construir una solución dinámica.
+Se llegó a la conclusión de que no es factible construir los subconjuntos priorizando las 
+características, por ello, se procede a priorizar los grupos iniciales. 
+
+Digamos que un subconjunto es homogéneo si todos sus elementos cumplen o no la característica, 
+es heterogéneo en caso contrario. Demostremos que no es necesario construir 
+más de un subconjunto heterogéneo en un mismo grupo.
+
+\begin{proof}
+    Hagamos inducción en la cantidad de subconjuntos que se pueden formar en un grupo.
+
+    \begin{itemize}
+        \item Caso base
+    
+        Para $n=1$:
+        Trivial. Da igual si el subconjunto construido es homogéneo o heterogéneo.
+
+        Para $n=2$:
+
+        Si se pueden construir 2 subconjuntos, entoces tenemos al menos $2k$ elementos, por tanto, 
+        tenemos al menos $k$ elementos que cumplen la característica. Luego podemos construir 
+        un subconjunto homogéneo con esos $k$ elementos y uno heterogéneo.
+        
+        \item Hipótesis
+        
+        Supongamos que si en un grupo se pueden formar $n$ subconjuntos, 
+        serán $n-1$ homogéneos y uno heterogéneo.
+
+        \item Caso $n+1$
+        
+        Se pueden construir $n+1$ subconjuntos en un determinado grupo. Podremos construir 
+        $n$ subconjuntos, de los que sabemos que $n-1$ son homogéneos, uno es heterogéneo y 
+        tenemos otro que no sabemos que es. Tomemos el subconjunto heterogéneo y el desconocido, 
+        y hagamos un subgrupo que contenga a esos dos subconjuntos y los elementos restantes que no forman
+        parte de ningún otro subconjunto. Estamos en presencia del caso base 
+        con $n=2$, luego para $n+1$ subconjuntos se pueden formar $n$ subconjuntos homogéneos y uno heterogéneo.
+    \end{itemize}
+\end{proof}
+
+Teniendo en cuenta lo antes planteado se puede realizar el análisis preocupándonos solamente por 
+formar un conjunto heterogéneo. Solo es necesario analizar en el momento de construir dicho subconjunto
+la cantidad de elementos que cumplen la característica, ya que la cantidad que no la cumple se puede obtener de 
+la resta del total con los que la cumplen.
+
+Como en un grupo solo es necesario analizar la cantidad de elementos que cumplen la característica, se pueden construir 
+$min(k-1, a[i])$ posibles subconjuntos. Como a priori no se puede decidir cual de ellas arrojará un mejor resultado se tienen 
+que probar cada una. Por lo que
+el tercer enfoque consiste en construir una solución dinámica.
+
 Sea $g$ la cantidad de grupos iniciales que contienen a los elementos, 
 sean $a$ y $b$ listas que determinan la cantidad de elementos que cumplen
 la característica y los que no, en cada uno de los grupos. De modo que $a[i]$ 
@@ -268,12 +315,17 @@ de tipo 1 después de haber pasado por los primeros $i$ grupos. No es necesario
 tener en cuenta los elementos de tipo 2; ya que, sabiendo que hay $j$ de tipo 1 restantes
 podemos decir que hay $(n-j)\%k$ elementos de tipo 2 restantes. 
 
-\subsection*{Correctitud}
+En el análisis de un grupo sabemos que $dp[i][j] = True$ si podemos tener $(j-a[i]\%k)\%k$
+elementos sobrantes después de haber analizado $i-1$ grupos. Como con los elementos de tipo 1 
+podemos construir cierta cantidad de subconjuntos homogéneos, solo nos interesa la cantidad que sobra 
+$a[i]\%k$.
 
 \subsection*{Pseudocódigo}
 
 \begin{lstlisting}[language = Python]
-def sol(g, k, a, b):
+def sol(G, F, k):
+    g = CountGroups(G)
+    a, b = CountFeat(G, F)
     totA = Sum(a)
     totB = Sum(b)
 
@@ -296,19 +348,36 @@ def sol(g, k, a, b):
 \end{lstlisting}
 
 \subsection*{Complejidad temporal}
-El costo de calcular $totA$ y  $totB$ es $O(g)$. Luego el costo del ciclo 
-de la línea \textbf{8} es $O(g)$, el ciclo anidado en la línea \textbf{9} 
+El costo de obtener $g$, $a$ y $b$ es $O(|G|) = O(n)$ ya que para esto es necesario construir 
+el diccionario utilizado en la solución anterior. El costo de calcular $totA$ y  $totB$ es $O(g)$. 
+Luego el costo del ciclo de la línea \textbf{10} es $O(g)$, el ciclo anidado en la línea \textbf{11} 
 tiene costo $O(k)$, por lo que hasta ahora el costo va siendo $O(gk)$. Además 
-el costo del ciclo anidado en la línea \textbf{11} tiene costo $O(k)$, ya que 
+el costo del ciclo anidado en la línea \textbf{13} tiene costo $O(k)$, ya que 
 $k-1 < k$ y al ser la función $min$ se garantiza que se tomará un valor menor
 o igual que $k-1$. Luego el costo temporal de ejecutar los tres ciclos es $O(gk^2)$.
 Luego para calcular el resultado se realiza un ciclo con costo $O(k)$.
-Por tanto el costo temporal total del algoritmo es $O(gk^2)$.
+Por tanto el costo temporal total del algoritmo es $O(gk^2 + n)$, y como $g \leq n$ entoces
+se puede decir que es $O(nk^2)$.
 \section*{Tester}
 
-\subsection*{Generador de casos de pueba}
+Se implementó un generador de casos de prueba, para luego resolver dichos casos con las 
+soluciones desarrolladas y compararlas.
+\subsection*{Generar casos de prueba}
 
-\subsubsection*{Pseudocódigo}
+Para generar los casos de prueba que se van a testear a continuación, se debe ejecutar el archivo 
+$TestCaseGenerator.py$. Esto generará 10000 casos de prueba por cada potencia de 2 de tamaño, hasta 1024, 
+para un total de 90000 casos de prueba. Los casos de prueba se guardan en formato '.txt' en la carpeta 
+$test_cases$ dentro del proyecto.
+
+\subsubsection*{Ejecución}
+Para ejecutar el tester, se debe ejecutar el archivo $Tester.py$. Esto correrá los tres algoritmos sobre los 
+casos de prueba generados anteriormente, luego comparará las respuestas de las soluciones $greedy$ y 
+$din\acute{a}mica$ con la solución por $backtrack$. Se guardan dichos resultados y además se imprime 
+el porcentaje de errores en cada caso. Cabe destacar que a pesar de haber casos de prueba hasta $n = 1024$, 
+solo se probó hasta $n = 16$ debido al costo del $backtrack$.
+
+La solución dinámica no presentó errores. La solución greedy en los casos $n=2$ y $n=4$ no presentó errores, mientras
+que para $n=8$ tuvo un $1.05\%$ de errores y para $n=16$ un $xxx$ de errores.
 
 \end{document}
 

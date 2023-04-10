@@ -51,7 +51,3 @@ def FeaturesBySets(st_list, failedInP):
     
     return fbs
  
-g = [1, 1, 1, 2, 1, 1, 2]
-p = [1, 1, 1, 1, 0, 0, 0]
-
-print(Solve(g,p,5))
