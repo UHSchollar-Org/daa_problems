@@ -1,16 +1,13 @@
-from Graph import Graph
+import graph as gr
 
-G = Graph()
-G.add_node(1)
-G.add_node('Pepe')
-G.add_edge(1,'Pepe')
-G.add_edge('Pepe', 1)
-G.add_edge(1,2)
-G.add_edge(4,5)
-G.remove_node(1)
-G.add_edge(1,"Pepe")
-G.add_edge(1,2)
-G.remove_edge(1,2)
-print(G.nodes)
-print(G.adj_dict)
-print(G.edges)
+g = gr.Graph()
+g.add_edge(1,2)
+g.add_edge(1,3)
+g.add_edge(2,4)
+g.add_edge(3,4)
+g.add_edge(4,5)
+
+print(g.edges)
+
+g.remove_edge(3,4)
+print(g.edges)

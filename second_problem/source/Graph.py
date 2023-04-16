@@ -137,7 +137,9 @@ class Graph:
             self.adj_dict[u].remove(v)
             if u != v:
                 self.adj_dict[v].remove(u)
-            #TODO remove edge in self._edges
+            for edge in self._edges:
+                if (edge[0]==u and edge[1]==v) or (edge[0]==v and edge[1]==u):
+                    self._edges.remove(edge)
         except:
             raise KeyError(f"The edge {u}-{v} is not in the graph")
         
@@ -147,4 +149,27 @@ class Graph:
         self._nodes.clear()
         self._edges.clear()
         self.adj_dict.clear()
+
+def BFS(g: Graph, s):
+    """Breadth-first search algorithm
+
+    Args:
+        g (Graph): Graph object
+        s (Any): Starting node
+
+    Returns:
+        dict[Any:int]: Dictionary with the distance from s to each node
+    """
+    distances = {}
+    distances[s] = 0
+    queue = []
+    queue.append(s)
     
+    while queue:
+        u = queue.pop(0)
+        for v in g.adj[u]:
+            if v not in distances:
+                distances[v] = distances[u] + 1
+                queue.append(v)
+    
+    return distances
