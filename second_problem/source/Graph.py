@@ -200,10 +200,11 @@ def bfs(g: Graph, s):
     
     return distances
 
-def floyd_warshall(g: Graph, c: Dict[Any, Dict[Any, int]]):
+def floyd_warshall(g: Graph):
     """Floyd-Warshall algorithm
     g: Graph object
-    c: Cost matrix
+    Note: to use this algorithm the weight of the edges must be 
+    specified with the attribute name 'w'
     """
     # Initialize distances
     distances: Dict[Any, Dict[Any, int]] = {}
@@ -211,15 +212,14 @@ def floyd_warshall(g: Graph, c: Dict[Any, Dict[Any, int]]):
     for u in g:
         distances[u] = {}
         for v in g:
-            if g.have_edge(u, v):
-                distances[u][v] = c[u][v]
+            if u == v:
+                distances[u][v] = 0 # Put 0 on the diagonal
             else:
-                distances[u][v] = float('inf')
-    
-    # Initialize distances with 0 for the diagonal
-    for u in g:
-        distances[u][u] = 0
-    
+                try:
+                    distances[u][v] = g[u][v].get('w', 0) # If the edge has no weight, the weight is 0
+                except:
+                    distances[u][v] = float('inf') # If there is no edge between u and v, the weight is infinity
+        
     # Floyd-Warshall algorithm
     for k in g:
         for u in g:
