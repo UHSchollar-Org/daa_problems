@@ -35,9 +35,12 @@ class Graph:
     @property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
+        The neighbor-dict is keyed by neighbor to the edge-data-dict.  
+        So `G.adj[3][2]['color'] = 'blue'` sets the color of the edge 
+        `(3, 2)` to `"blue"`.
 
         Returns:
-            dict[Any:list]
+            dict[Any:dict]
         """
         return self.adj_dict
     
@@ -80,7 +83,7 @@ class Graph:
             if node_for_adding is None:
                 raise ValueError("None cannot be a node")
             self._nodes.append(node_for_adding)
-            self.adj_dict[node_for_adding] = []
+            self.adj_dict[node_for_adding] = {}
             
     def remove_node(self, n):
         """Remove node n and all adjcent edges.
@@ -96,33 +99,42 @@ class Graph:
             raise KeyError(f"The node {n} is not in the graph")
         
         for u in neighbors:
-            self.adj_dict[u].remove(n)
+            del self.adj_dict[u][n]
         del self.adj_dict[n]
         for edge in self._edges:
             if edge[0]==n or edge[1]==n:
                 self._edges.remove(edge)
     
-    def add_edge(self, u_of_edge, v_of_edge):
+    def add_edge(self, u_of_edge, v_of_edge, **attr):
         """Add edge between u and v. The node u and v will be 
         automatically added if they are not already in the graph.
+        Edge attributes can be specified with keywords or by directly
+        accessing the edge's attribute dictionary.
 
         Args:
             u_of_edge (Any): A node can be any hashable Python object except None.
             v_of_edge (Any): A node can be any hashable Python object except None.
+            attr : keyword arguments, optional
         """
         u,v = u_of_edge, v_of_edge
         if u is None or v is None:
             raise ValueError("None cannot be a node")
         if u not in self._nodes:
             self._nodes.append(u)
-            self.adj_dict[u] = [v]
-        elif v not in self.adj_dict[u]:
-            self.adj_dict[u].append(v)
+            self.adj_dict[u] = {v:{}}
+        """elif v not in self.adj_dict[u]:
+            self.adj_dict[u].append(v)"""
         if v not in self._nodes:
             self._nodes.append(v)
-            self.adj_dict[v] = [u]
-        elif u not in self.adj_dict[v]:
-            self.adj_dict[v].append(u)
+            self.adj_dict[v] = {u:{}}
+        """elif u not in self.adj_dict[v]:
+            self.adj_dict[v].append(u)"""
+            
+        datadict = self.adj_dict[u].get(v, {})
+        datadict.update(attr)
+        self.adj_dict[u][v] = datadict
+        self.adj_dict[v][u] = datadict
+        
         if (u,v) not in self._edges and (v,u) not in self._edges:
             self._edges.append((u,v))  
     
@@ -148,9 +160,9 @@ class Graph:
             v (Any): _description_
         """
         try:
-            self.adj_dict[u].remove(v)
+            del self.adj_dict[u]
             if u != v:
-                self.adj_dict[v].remove(u)
+                del self.adj_dict[v]
             for edge in self._edges:
                 if (edge[0]==u and edge[1]==v) or (edge[0]==v and edge[1]==u):
                     self._edges.remove(edge)
@@ -181,7 +193,7 @@ def bfs(g: Graph, s):
     
     while queue:
         u = queue.pop(0)
-        for v in g.adj[u]:
+        for v in g.adj[u].keys():
             if v not in distances:
                 distances[v] = distances[u] + 1
                 queue.append(v)
