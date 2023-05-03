@@ -146,9 +146,9 @@ class Graph:
             v (Any): _description_
         """
         try:
-            self.adj_dict[u].remove(v)
+            del self.adj_dict[u]
             if u != v:
-                self.adj_dict[v].remove(u)
+                del self.adj_dict[v]
             for edge in self._edges:
                 if (edge[0]==u and edge[1]==v) or (edge[0]==v and edge[1]==u):
                     self._edges.remove(edge)
