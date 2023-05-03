@@ -1,4 +1,4 @@
-
+from typing import Dict, Any
 
 class Graph:
     """Base class for undirected graphs
@@ -125,7 +125,21 @@ class Graph:
             self.adj_dict[v].append(u)
         if (u,v) not in self._edges and (v,u) not in self._edges:
             self._edges.append((u,v))  
-            
+    
+    def have_edge(self, u_of_edge, v_of_edge):
+        """Return True if there is an edge between u and v, False otherwise.
+
+        Args:
+            u_of_edge (Any): A node can be any hashable Python object except None.
+            v_of_edge (Any): A node can be any hashable Python object except None.
+        """
+        u,v = u_of_edge, v_of_edge
+        try:
+            if v in self.adj_dict[u] or u in self.adj_dict[v]:
+                return True
+        except:
+            return False
+    
     def remove_edge(self, u, v):
         """Remove the edge between u and v.
 
@@ -150,7 +164,7 @@ class Graph:
         self._edges.clear()
         self.adj_dict.clear()
 
-def BFS(g: Graph, s):
+def bfs(g: Graph, s):
     """Breadth-first search algorithm
 
     Args:
@@ -171,5 +185,33 @@ def BFS(g: Graph, s):
             if v not in distances:
                 distances[v] = distances[u] + 1
                 queue.append(v)
+    
+    return distances
+
+def floyd_warshall(g: Graph, c: Dict[Any, Dict[Any, int]]):
+    """Floyd-Warshall algorithm
+    g: Graph object
+    c: Cost matrix
+    """
+    # Initialize distances
+    distances: Dict[Any, Dict[Any, int]] = {}
+    # Initialize distances with the cost of the edges
+    for u in g:
+        distances[u] = {}
+        for v in g:
+            if g.have_edge(u, v):
+                distances[u][v] = c[u][v]
+            else:
+                distances[u][v] = float('inf')
+    
+    # Initialize distances with 0 for the diagonal
+    for u in g:
+        distances[u][u] = 0
+    
+    # Floyd-Warshall algorithm
+    for k in g:
+        for u in g:
+            for v in g:
+                distances[u][v] = min(distances[u][v], distances[u][k] + distances[k][v])
     
     return distances
