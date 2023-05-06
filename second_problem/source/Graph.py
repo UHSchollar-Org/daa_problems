@@ -1,4 +1,6 @@
-from typing import Dict, Any
+from typing import Dict, Any, List, Tuple
+import heapq as hq
+
 
 class Graph:
     """Base class for undirected graphs
@@ -200,6 +202,45 @@ def bfs(g: Graph, s):
     
     return distances
 
+
+
+def dijkstra(g: Graph, source):
+    """Dijkstra algorithm
+    g: Graph object
+    source: starting node
+    Note: to use this algorithm the weight of the edges must be 
+    specified with the attribute name 'w'
+    """
+    # Relax function
+    def _relax(u,v):
+        if distances[v] > distances[u] + g[u][v].get('w'):
+            distances[v] = distances[u] + g[u][v].get('w')
+            pi[v] = u
+    
+    # Initialization
+    distances: Dict[Any, int] = {v : float('inf') for v in g}
+    pi: Dict[Any, Any] = {v : None for v in g}
+    distances[source] = 0
+    s = []
+    q = []
+    
+    # Initialize the priority queue (q=V)
+    for u in g:
+        if u!=source:
+            val = g[source][u].get('w', 0) if g[source].get(u) else float('inf')
+            hq.heappush(q, (val, u))
+        
+    hq.heappush(q,(0,source))
+    
+    # Relax each edge    
+    while q:
+        u = hq.heappop(q)[1]
+        s.append(u)
+        for v in g[u]:
+            _relax(u,v)
+    
+    return distances, pi
+    
 def floyd_warshall(g: Graph):
     """Floyd-Warshall algorithm
     g: Graph object
@@ -208,6 +249,7 @@ def floyd_warshall(g: Graph):
     """
     # Initialize distances
     distances: Dict[Any, Dict[Any, int]] = {}
+    
     # Initialize distances with the cost of the edges
     for u in g:
         distances[u] = {}
@@ -227,3 +269,15 @@ def floyd_warshall(g: Graph):
                 distances[u][v] = min(distances[u][v], distances[u][k] + distances[k][v])
     
     return distances
+
+def graph_from_edges(edges: List[Tuple[Any, Any, Dict[str, Any]]]):
+    """Create a graph from a list of edges
+
+    Args:
+        edges (List[Tuple[Any, Any, Dict[str, Any]]]): List of edges. Each edge is a tuple of the form (u, v, attr)
+    """
+    g = Graph()
+    for edge in edges:
+        u, v, attr = edge
+        g.add_edge(u, v, **attr)
+    return g
