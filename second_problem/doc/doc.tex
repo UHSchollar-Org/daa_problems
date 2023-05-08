@@ -103,8 +103,51 @@ de costo mínimo entre $u$ y $v$.
 \end{proof}
 
 \section*{Solución}
+Teniendo en cuenta lo anterior, para cada par de vértices $s$ y $d$, se puede obtener $U_{s,d}$ y $W_{s,v}$ ($v \in V$), y
+como se planteaba al inicio de la modelación del problema, calcular la solución para $[s,d]$ sería efectuar
+$\sum_{v \in U_{s,d}}W_{s,v}$.
 
+\subsection*{Pseudocódigo}
+\begin{lstlisting}[language = Python]
+    def solve(graph):
+        F = Floyd-Warshall(graph)
+        W = {u -> {v -> int}}
+        solution = {u -> {v -> int}}
+        
+        for e in edges:
+            for u in nodes:
+                if F[u,e.v1] + e.weight == F[u,e.v2]:
+                    W[u,e.v2] += 1
+                if F[u,e.v2] + e.weight == F[u,e.v1]:
+                    W[u,e.v1] += 1
+        
+        for u in nodes:
+            for v in nodes:
+                for w in nodes:
+                    if F[u,w] + F[w,v] == F[u,v]:
+                        solution[u,v] += W[u,w]
+        
+        return solution
+\end{lstlisting}
 
+\section*{Complejidad temporal}
+Para calcular la complejidad temporal del algoritmo se analizarán las complejidades 
+de los bloques de código \textbf{\textit{2-4}}, \textbf{\textit{6-11}} y \textbf{\textit{13-17}}.
 
+El bloque de código \textbf{\textit{2-4}} tiene complejidad $O(|V|^3)$ ya que el costo de ejecutar 
+Floyd-Warshall es $O(|V|^3)$ y el costo de inicializar $W$ y $solution$ es 
+$O(|V|^2)$ y $O(|V|^3) + O(|V|^2) = O(|V|^3)$. 
+
+En el bloque de código \textbf{\textit{6-11}} se itera por todas las aristas y vértices del grafo, 
+por tanto tiene complejidad $O(EV)$ (el interior del ciclo es $O(1)$). En caso de ser denso el grafo, 
+se cumple que $|E| \approx |V|^2$ por lo que el costo sería $O(|V|^3)$.
+
+Luego en el bloque \textbf{\textit{13-17}} se realiza un triple $for$ por los vértices del grafo, 
+por tanto tiene costo $O(|V|^3)$(el interior del ciclo es $O(1)$).
+
+Por tanto la complejidad temporal del algoritmo es:
+\begin{align}
+    O(|V|^3) + O(|V|^2) + O(|V|^3) = O(|V|^3).
+\end{align}
 
 \end{document}
