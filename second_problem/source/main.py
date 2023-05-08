@@ -28,10 +28,10 @@ def sol2(w_edges):
             if min_dists[node][edge[1]] + g[edge[0]][edge[1]]['w'] == min_dists[node][edge[0]]:
                 inEdges[node][edge[0]] += 1
 
-    for v in g.nodes:
-        for u in g.nodes:
-            for k in g.nodes:
-                if min_dists[v][k] + min_dists[k][u] == min_dists[v][u]:
-                    sol[v][u] += inEdges[v][k]
+    for u in g.nodes:
+        for v in g.nodes:
+            for w in g.nodes:
+                if min_dists[u][w] + min_dists[w][v] == min_dists[u][v]:
+                    sol[u][v] += inEdges[u][w]
     
     return sol
