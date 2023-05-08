@@ -59,9 +59,48 @@ costo mínimo es $\sum_{v \in U_{s,d}}W_{s,v}$.
 Luego para resolver el problema basta con calcular los conjuntos $U_{s,d}$ y $W_{s,v}$ para cada
 par de vértices $s$ y $d$, y efectuar $\sum_{v \in U_{s,d}}W_{s,v}$.
 
-\subsection*{Conjunto $W_{s,v}$}
+\subsection*{Como obtener $W_{s,v}$}
 Sea $F$ la matriz de distancias obtenida luego de aplicar el algoritmo de Floyd-Warshall. 
+Sea $e$ una arista del grafo. %que participa en algún camino de costo mínimo. 
+Sea $u$ un vértice 
+del grafo, $v$ y $w$ los vértices que forman la arista $e$. Podemos saber si $e$ participa en 
+un camino de costo mínimo de $u$ a $v$ si $F[u,w] + peso(e) = F[u,v]$ (para el caso de $w$ 
+si $F[u,v] + peso(e) = F[u,w]$). Demostremos esto.
 
+\subsubsection*{Lema}
+Sea $F$ la matriz resultante de aplicar Floyd-Warshall en un grafo no dirigido y ponderado.
+Sea $u$, $v$ y $w$ vértices del grafo, y $e$ una arista que une a $v$ y $w$.
+Si $F[u,v] + peso(e) = F[u,w]$ entonces $e$ participa en algún camino de costo mínimo entre
+$u$ y $w$.
+
+\begin{proof}
+    Si $F[u,v] + peso(e) = F[u,w]$ entonces el algoritmo de Floyd-Warshall encontró un camino 
+    de costo mínimo entre $u$ y $v$ con costo $F[u,v]$ y un camino de costo mínimo entre 
+    $u$ y $w$ con costo $F[u,w]$. Por tanto, como $e = <v,w>$, si $e$ no participara en algún camino de costo
+    mínimo entre $u$ y $w$, entonces el algoritmo de Floyd-Warshall habría encontrado un camino con costo 
+    menor que $F[u,w]$, lo cual es una contradicción. Luego $e$ participa en algún camino de costo mínimo entre
+    $u$ y $w$.
+\end{proof}
+
+Entonces para obtener $W_{s,v}$ para cada $s$ y $v$ basta con iterar por las aristas y vértices del grafo 
+comprobando lo anterior.
+
+\subsection*{Como obtener $U_{s,d}$}
+Sea $F$ la matriz de distancias obtenida luego de aplicar el algoritmo de Floyd-Warshall.
+Sea $u$, $v$ y $w$ vértices del grafo. Si $F[u,w] + F[w,v] = F[u,v]$ entonces $w$ participa en algún camino
+de costo mínimo entre $u$ y $v$. Demostremos esto.
+
+\subsubsection*{Lema}
+Sea $F$ la matriz resultante de aplicar Floyd-Warshall en un grafo no dirigido y ponderado.
+Sea $u$, $v$ y $w$ vértices del grafo. Si $F[u,w] + F[w,v] = F[u,v]$ entonces $w$ participa en algún camino
+de costo mínimo entre $u$ y $v$.
+
+\begin{proof}
+    $F[u,w]$ es el costo de un camino de costo mínimo de $u$ a $w$, 
+    $F[w,v]$ es el costo de un camino de costo mínimo de $w$ a $v$, y si la suma del costo de ambos caminos es 
+    igual al costo de un camino de costo mínimo entre $u$ y $v$, entonces existe un camino $u...w...v$ que tiene costo
+    mínimo, por tanto $w$ participa en algún camino de costo mínimo de $u$ a $v$. 
+\end{proof}
 
 \section*{Solución}
 
