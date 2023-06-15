@@ -142,3 +142,5 @@ third_problem/source/results/time_results/Genetic_time_results.json
 third_problem/source/results/values_results/Genetic_values_results.json
 third_problem/source/results/values_results/DPLL_values_results.json
 third_problem/source/results/time_results/DPLL_time_results.json
+third_problem/source/results/time_results/Exhaustive_Enumeration_time_results.json
+third_problem/source/results/values_results/Exhaustive_Enumeration_values_results.json
