@@ -42,3 +42,39 @@ def test(method, test_cases_path, results_path):
             
             with open(results_path/"values_results"/f"{method_name}_values_results.json", "w") as file:
                 json.dump(method_results, file)
+
+def validate(method1, method2):
+    path = Path.cwd()
+    results_path = path / "third_problem" / "source" / "results"
+    method1_path = results_path / "values_results" / f"{type(method1).__name__}_values_results.json"
+    method2_path = results_path / "values_results" / f"{type(method2).__name__}_values_results.json"
+    
+    method1_results = load_json(method1_path)
+    method2_results = load_json(method2_path)
+
+    for n in method1_results:
+        if n not in method2_results:
+            break
+        for m in n:
+            if m not in method2_results[n]:
+                break
+            method1_values = method1_results[n][m]
+            method2_values = method2_results[n][m]
+            
+            if len(method1_values) != len(method2_values):
+                raise Exception(f"For {n},{m} there are diferent values count between method1 and method2")
+            validate_values(method1_values, method2_values)
+    print("Valid methods values")
+
+def validate_values(method1_values, method2_values):
+    for i in range(len(method1_values)-1):
+        if type(method1_values[i]) != type(method2_values[i]):
+            raise Exception(f"Results in case {i} not equals")
+
+def load_json(json_path):
+    data = {}
+    
+    with open(json_path, "r") as file:
+        data = json.load(file)
+    
+    return data
