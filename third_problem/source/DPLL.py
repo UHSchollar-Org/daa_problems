@@ -15,13 +15,13 @@ class DPLL:
     cm
     Ci represents a clause of the formula, which is a disjunction of literals separated by spaces.
     """
-    def __init__(self, literal_strategy : str, value_strategy : str) -> None:
+    def __init__(self, literal_strategy : str = "random", value_strategy : str = "random") -> None:
         """Davis-Putnam-Logemann-Loveland algorithm: It is a recursive algorithm that uses the unit propagation 
         and the pure literal rule to simplify the formula.
 
         Args:
-            literal_strategy (str): Literal selection strategy. Options: "random"
-            value_strategy (str): Value selection strategy. Options: "random"
+            literal_strategy (str): Literal selection strategy. Options: "random". Default: "random"
+            value_strategy (str): Value selection strategy. Options: "random". Default: "random"
         """
         self.next_literal_selection = literal_strategy
         self.next_value_selection = value_strategy
@@ -39,7 +39,7 @@ class DPLL:
         variables = [0] * n
         assignations = [False] * n
         formula = parse_formula(c)
-        return self.DPLL_rec(variables, assignations, n, m, formula)
+        return self.DPLL_rec(variables, assignations, n, m, formula)[0]
     
     def DPLL_rec(self, variables, assignations, n, m, c):
         """Recursive function that checks if the formula is satisfied with the current assignment of truth values to boolean variables.
@@ -67,7 +67,7 @@ class DPLL:
             variables[literal - 1] = value
             new_formula, valid_solution = self.unit_propagation(literal, value, deepcopy(variables), deepcopy(assignations), deepcopy(c))
             if valid_solution:
-                result, valid_solution = self.DPLL_rec(variables,assignations,n,m,new_formula)
+                result, valid_solution = self.DPLL_rec(deepcopy(variables),deepcopy(assignations),n,m,new_formula)
                 if valid_solution:
                     return result, valid_solution
         return None, False

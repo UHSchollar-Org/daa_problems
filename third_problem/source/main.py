@@ -7,5 +7,6 @@ from tester import test
 path = Path.cwd()
 test_cases_path = path / "third_problem" / "source" /"test_cases" / "3SAT"
 results_path = path / "third_problem" / "source" / "results"
-method = Genetic(10,10,0.15)
-test(method, test_cases_path, results_path)
+method1 = Genetic(10,10,0.15)
+method2 = DPLL()
+test(method2, test_cases_path, results_path)
