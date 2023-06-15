@@ -138,3 +138,5 @@ second_problem/doc/doc.aux
 second_problem/doc/doc.fdb_latexmk
 second_problem/doc/doc.fls
 second_problem/doc/doc.synctex.gz
+third_problem/source/results/time_results/Genetic_time_results.json
+third_problem/source/results/values_results/Genetic_values_results.json
