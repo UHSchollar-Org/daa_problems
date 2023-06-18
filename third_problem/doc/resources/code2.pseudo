@@ -1,0 +1,26 @@
+function dpll(exp) do
+   cnf = to_CNF(exp)
+   n = |vars in exp|
+   vars = [n]
+   assigns = [n]
+   return dpll_rec(vars, assigns, n, |cnf|, cnf) 
+end
+
+function dpll_rec(vars, assigns, n, |cnf|, cnf) do
+    if evaluate(vars, cnf) do
+        return vars
+    end
+
+    literal = select_next_literal(vars, assigns)
+    assigns[literal-1] = true
+    values = select_literal_values(random)
+
+    foreach (value in values) do
+        vars[literal-1] = value
+        new_formula, valid_solution = unit_propagation(literal, value, vars, assigns, cnf)
+
+        if valid_solution do
+            result, valid_solution = dpll_rec(vars, assigns, n, |cnf|, new_formula)
+        end
+    end
+end
