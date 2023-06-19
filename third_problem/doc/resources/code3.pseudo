@@ -1,0 +1,16 @@
+function genetic(generations, population_len, mutation_rate, cnf) do
+    population = create_population(population_len)
+
+    for (i = 0, i < generations, i++) do
+        selection = selection(population, cnf)
+        
+        if fitness(selection[0], cnf) == |cnf| do
+            return selection[0]
+        end
+
+        population = breed(selection)
+    end
+
+    population = selection(population, cnf)
+    return population[0]
+end
