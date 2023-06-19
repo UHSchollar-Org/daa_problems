@@ -99,41 +99,16 @@
 
         \subsubsection*{Pseudocódigo}
 
-\begin{lstlisting}[language=Python]
-def exhaustive_enumeration(expresion):
-    cnf = to_CNF(expresion)
-    n = len(expresion.vars)
-    vars = [0] * n
-    pos = 0
-    result = generate_assignments(vars, pos, n, len(cnf), cnf)
-    return result
+            %%PONER PSEUDO1
 
-def generate_assignments(vars, pos, n, m, cnf):
-    if pos == n:
-        if evaluate(vars, cnf):
-            return vars
-        else:
-            return None
-    else:
-        vars[pos] = 0
-        if generate_assignments(vars, pos + 1, n, m, cnf):
-            return vars
-        
-        vars[pos] = 1
-        if generate_assignments(vars, pos + 1, n, m, cnf):
-            return vars
-        
-        return None
-\end{lstlisting}
-
-        El algoritmo de fuerza bruta tiene una complejidad exponencial en el peor caso. En 
-        particular, si la fórmula tiene $n$ variables y $m$ cláusulas, entonces el número
-        de posibles asignaciones de valores de verdad es $2^n$, lo que significa que se necesitan 
-        $2^n$ iteraciones para evaluar todas las posibles asignaciones. En cada iteración, el 
-        algoritmo debe evaluar la fórmula lógica para determinar si la asignación actual satisface la 
-        fórmula, esto implica recorrer todos los literales de cada cláusula, para 
-        verificar si dicha asignación satisface la fórmula. Luego la complejidad temporal 
-        sería $O(2^n * |F|)$.
+            El algoritmo de fuerza bruta tiene una complejidad exponencial en el peor caso. En 
+            particular, si la fórmula tiene $n$ variables y $m$ cláusulas, entonces el número
+            de posibles asignaciones de valores de verdad es $2^n$, lo que significa que se necesitan 
+            $2^n$ iteraciones para evaluar todas las posibles asignaciones. En cada iteración, el 
+            algoritmo debe evaluar la fórmula lógica para determinar si la asignación actual satisface la 
+            fórmula, esto implica recorrer todos los literales de cada cláusula, para 
+            verificar si dicha asignación satisface la fórmula. Luego la complejidad temporal 
+            sería $O(2^n * |F|)$.
     
     \subsection*{Algoritmo DPLL}
         El algoritmo DPLL (Davis-Putnam-Logemann-Loveland) es un algoritmo de resolución de satisfacibilidad booleana (SAT) que se utiliza 
@@ -165,34 +140,7 @@ def generate_assignments(vars, pos, n, m, cnf):
         Si ambas devuelven contradicciones, entonces es insatisfacible.
 
             \subsubsection*{Pseudocódigo}
-\begin{lstlisting}[language=Python]
-def dpll(expresion):
-    cnf = to_CNF(expresion)
-    n = len(expresion.vars)
-    vars = [0] * n
-    assigns = [False] * n
-    return dpll_rec(vars, assigns, n, len(cnf), cnf)
-
-def dpll_rec(vars, assigns, n, len(cnf), cnf):
-    if evaluate(vars, cnf):
-        return vars
-    
-    literal = select_next_literal(vars, assigns)
-    assigns[literal-1] = True
-    values = select_literal_values(random)
-
-    for value in values:
-        vars[literal-1] = value
-        new_formula, valid_solution = unit_propagation(literal, value, vars, assigns, cnf)
-    
-        if valid_solution:
-            result, valid_solution = dpll_rec(vars, assigns, n, len(cnf), new_formula)
-            
-            if valid_solution:
-                return result
-    
-    return None
-\end{lstlisting}
+                %%PONER PSEUDO2
 
                 Métodos utilizados:
                 \begin{itemize}
@@ -255,7 +203,35 @@ def dpll_rec(vars, assigns, n, len(cnf), cnf):
             \item Repetición del proceso: Si no se ha encontrado una solución satisfactoria, 
             se repiten los pasos 4 a 9 hasta que se cumpla la condición de terminación.
         \end{enumerate}
+        
+        \subsubsection*{Pseudocódigo}
+            %%PONER PSEUDO3
+            Para mayor comodidad, digámosle $n$ al tamaño de la población, $v$ a la cantidad de variables de 
+            la fórmula, $g$ a la cantidad de generaciones del algoritmo y $l$ a la cantidad de cromosomas restantes 
+            luego de seleccionar los mejores.
+            
+            En la complejidad temporal de este algoritmo genético influyen directamente varios procesos:
+            \begin{enumerate}
+                \item Generar población inicial: se crean $n$ cromosomas de tamaño $v$ de manera 
+                aleatoria, por lo que la complejidad temporal sería $O(nv)$.  
+                \item Simular generaciones: en la simulación de las generaciones se tienen en cuenta los siguientes
+                procesos:
+                    \begin{itemize}
+                        \item Seleccionar mejores cromosomas: para seleccionar los mejores cromosomas, se aplica la 
+                        función fitness sobre cada uno. La función fitness tiene costo $O(|cnf|)$, ya que 
+                        recorre la fórmula para evaluar el cromosoma en ella. Esto se realiza por cada cromosoma, 
+                        por lo que el costo de seleccionar sería $O(n|cnf|)$.  
+                        \item Cruzar cromosomas seleccionados: para cruzar cromosomas se recorre la selección anterior
+                        y se mezclan los cromosomas. El proceso de mezcla tiene costo $O(v)$, por lo que este 
+                        proceso tiene complejidad $O(lv) \leq O(nv)$. 
+                        \item Ciclo: los procesos anteriores se ejecutan $g$ veces. Por tanto 
+                        este ciclo tiene costo $O(gn(|cnf|+v))$. Como $v \leq |cnf|$,
+                        entonces la complejidad sería $O(gn|cnf|)$.
+                    \end{itemize}
+                \item Selección final: para la selección del cromosoma final se realiza nuevamente el proceso 
+                de selección, con costo $O(n|cnf|)$.
+            \end{enumerate}
 
-
+            Tras el análisis anterior se puede determinar que el costo total del algoritmo genético es $O(gn|cnf|)$. 
 
 \end{document}
