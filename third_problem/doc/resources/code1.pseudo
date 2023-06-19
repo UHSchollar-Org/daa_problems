@@ -1,0 +1,26 @@
+function exhaustive_enumeration(exp) do
+    cnf = to_CNF(exp)
+    n = |vars in exp|
+    vars = [n]
+    pos = 0
+    return generate_assignments(vars, pos, n, |cnf|, cnf)
+end
+
+function generate_assignments(vars, pos, n, m, cnf) do
+    if pos == n do
+        if evaluate(vars, cnf) do
+            return vars
+        end 
+    end else do
+        vars[pos] = 0
+        if generate_assignments(vars, pos + 1, n, m, cnf) do
+            return vars
+        end
+
+        vars[pos] = 1
+        if generate_assignments(vars, pos + 1, n, m, cnf) do
+            return vars
+        end
+    end
+    return Null
+end

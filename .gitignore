@@ -144,3 +144,8 @@ third_problem/source/results/values_results/DPLL_values_results.json
 third_problem/source/results/time_results/DPLL_time_results.json
 third_problem/source/results/time_results/Exhaustive_Enumeration_time_results.json
 third_problem/source/results/values_results/Exhaustive_Enumeration_values_results.json
+third_problem/doc/doc.aux
+third_problem/doc/doc.fdb_latexmk
+third_problem/doc/doc.fls
+third_problem/doc/doc.synctex.gz
+third_problem/An Approximation Algorithm for #k-SAT.pdf
