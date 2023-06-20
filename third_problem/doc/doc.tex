@@ -99,7 +99,7 @@
 
         \subsubsection*{Pseudocódigo}
 
-            %%PONER PSEUDO1
+            \includegraphics[width = 0.7\textwidth]{resources/code1.png}
 
             El algoritmo de fuerza bruta tiene una complejidad exponencial en el peor caso. En 
             particular, si la fórmula tiene $n$ variables y $m$ cláusulas, entonces el número
@@ -140,7 +140,7 @@
         Si ambas devuelven contradicciones, entonces es insatisfacible.
 
             \subsubsection*{Pseudocódigo}
-                %%PONER PSEUDO2
+                \includegraphics[width = 0.7\textwidth]{resources/code2.png}
 
                 Métodos utilizados:
                 \begin{itemize}
@@ -205,7 +205,9 @@
         \end{enumerate}
         
         \subsubsection*{Pseudocódigo}
-            %%PONER PSEUDO3
+            
+            \includegraphics[width = 0.7\textwidth]{resources/code3.png}
+
             Para mayor comodidad, digámosle $n$ al tamaño de la población, $v$ a la cantidad de variables de 
             la fórmula, $g$ a la cantidad de generaciones del algoritmo y $l$ a la cantidad de cromosomas restantes 
             luego de seleccionar los mejores.
@@ -233,5 +235,102 @@
             \end{enumerate}
 
             Tras el análisis anterior se puede determinar que el costo total del algoritmo genético es $O(gn|cnf|)$. 
+    
+    \subsection*{Algoritmo 2-Sat}
+        
+        Uno de los casos particulares del problema SAT, es el problema 2-SAT (solamente dos variables por cada cláusula).
+        Se decidió diferenciar el caso 2-SAT del resto ya que se puede resolver en tiempo polinomial, lo que para 
+        las instancias 2-SAT del problema sería una mejora sustancial.
+
+        Para solucionar el problema 2-SAT se crea un grafo dirigido donde las variables y sus negaciones están representadas
+        por nodos. Supongamos que tenemos una cláusula $(a \vee b)$, es equivalente a
+        $((\urcorner a \Rightarrow b)\wedge \urcorner b \Rightarrow a)$;
+        luego en el grafo el nodo $\urcorner a$ tendrá una arista hacia $b$ y $\urcorner b$ tendrá una arista hacia $a$. 
+        De esta forma se representa la fórmula en términos de teoría de grafos, finalmente la cantidad de nodos será el doble 
+        de la cantidad de variables y la cantidad de arcos el doble de la cantidad de clausulas.
+
+        Luego se hallan las componentes fuertemente conexas ($SCC_s$) del grafo. Esto tiene como ventaja: 
+        \begin{itemize}
+            \item Si una variable booleana $a$ y su negación $a$, pertenecen a una misma $SCC$, 
+            entonces no existe una asignación booleana que satisfaga todas las cláusula. Esto se debe a que cualquier 
+            asignación booleana que se haga a $a$ también se hará a $\urcorner a$, lo cual es una contradicción.
+            \item Si todas las variables $a$ y sus negaciones $\urcorner a$ pertenecen a diferentes $SCC_s$, entonces 
+            se puede construir una asignación booleana que satisfaga todas las cláusulas a partir de las $SCC_s$. En particular
+            cada $SCC$, se puede asignar el valor verdadero a todas sus variables booleanas y el valor falso a todas sus negaciones, 
+            y sabemos que esto es posible ya que las variables y sus negaciones estan en $SCC_s$ diferentes.
+        \end{itemize}
+
+        Una vez se comprueba que se puede establecer una asignación de valores de verdad que satisfaga la fórmula, entonces se procede construir
+        dicha asignación. Para ello se realiza un recorrido en orden topológico a cada $SCC$ y se asigna valor verdadero a las variables que no tengan
+        valor asignado en el momento de la visita, y valor falso a su opuesto directamente. Cuando se visite la primera $SCC$ se le asiganará 
+        valor verdadero a todas sus variables. De esta forma se satisfacen todas la implicaciones del grafo y a su vez las cláusulas de la fórmula
+        inicial.
+
+        \subsubsection*{Pseudocódigo}
+            \includegraphics[width = 0.7\textwidth]{resources/code4.png}
+
+            Para analizar la complejidad temporal del algoritmo se tienen en cuenta los siguientes aspectos:
+            \begin{enumerate}
+                \item Construcción del grafo: para construir el grafo es necesario recorrer la fórmula para hallar las variables
+                (para crear los nodos) y crear las aristas. Esto tiene costo $O(|cnf|)$. Como por cada cláusulas existen solamente dos
+                literales, entonces podemos decir que $|cnf| =  2m$, donde $m$ es la cantidad de cláusulas. Luego construir el grafo tiene costo
+                $O(m)$. El grafo tendrá $2n$ nodos ($n$ es la cantidad de variables) y $2m$ aristas ($m$ es la cantidad de cláusulas).
+                \item Hallar las componentes fuertemente conexas tiene costo $O(2n+2m) = O(n+m)$.
+                \item Comprobar si existe una contradicción en las $SCC_s$ tiene costo $O(n)$ ya que para ello se realiza un recorrido por 
+                los nodos y se puede comprobar en $O(1)$ si el opuesto de dicho nodo pertenece a la misma componente conexa. Esta comprobación 
+                puede realizarse teniendo guardado en una estructura de datos donde indexar tenga costo $O(1)$ (diccionario o  array en caso que 
+                las variables se traten con enteros) la $SCC$ a donde pertenezca cada nodo.
+                \item Para construir las asignaciones es necesario recorrer los nodos de cada $SCC$ y se puede guardar en un array de tamaño $2n$
+                el valor asigando a cada nodo. Si se tratan como enteros las variables esta indexación puede hacerse en $O(1)$, por lo que el costo 
+                será $O(n)$.
+            \end{enumerate} 
+            Apoyándose en el análisis anterior se puede determinar que el algoritmo tiene complejidad temporal $O(n+m)$.           
+
+    \subsection*{K-aproximación}
+        
+        La idea de este algoritmo es hacer una especie de algoritmo greedy con daños colaterales. 
+        Por cada iteración del algoritmo se determina cual es el literal más frecuente en la fórmula que
+        aun no tenga valor asignado. A ese literal se le asigna valor de verdad 1 y a su opuesto 0, esto convierte 
+        todas las cláusulas donde se encuentre en verdaderas. Esta decisión tiene como efecto negativo 
+        que cláusulas que contengan el opuesto de un literal con valor 1, potencialmente pueden resultar negativas.
+        Pero como el literal escogido es el más frecuente, tendrá una ocurrencia mayor o igual a su opuesto, por tanto
+        con esta elección de valor para esa variable se obtiene una cantidad de cláusulas verdaderas mayor o igual 
+        a la cantidad de falsas. Esto implica que en el peor de los casos en cada iteración, la cantidad de cláusulas verdaderas
+        sea la mitad del total de cláusulas evaluadas. Por tanto al finalizar el algoritmo
+        al menos la mitad de las cláusulas son verdaderas.
+
+        \begin{proof}
+            El algoritmo termina ya que por cada iteración se elimina al menos una cláusula de la fórmula original, 
+            y dicha fórmula es finita. 
+
+            Correctitud:
+
+            Sea $l_i$ el literal más frecuente en una iteración cualquiera del algoritmo y $-l_i$ su opuesto.
+            Sea $cl_i$ la cantidad de cláusulas que se evaluaron como verdaderas en esta iteración y $cl_i^{-1}$ las que
+            se evaluaron en falso. 
+            
+            Supongamos que $cl_i^{-1} > cl_i$, entonces la cantidad de cláusulas donde no aparece $l_i$ y si $-l_i$ 
+            es mayor a la cantidad de cláusulas donde aparece $l_i$, lo cual es una contradicción ya que $l_i$ era el literal
+            más frecuente. Por tanto $cl_i^{-1} \leq cl_i$.
+
+            Como 
+            \begin{align*}
+                cl_1^{-1} \leq cl_1, cl_1^{-1} \leq cl_1, \dots, cl_m^{-1} \leq cl_m
+            \end{align*}
+            Entonces
+            \begin{align*}
+                cl_1^{-1} + cl_2^{-1} + \dots + cl_m^{-1} \leq cl_1 + cl_2 + \dots + cl_m
+            \end{align*}
+            Por tanto la cantidad total de cláusulas verdaderas es como mínimo la mitad del total de 
+            cláusulas.
+        \end{proof}
+        Este algoritmo resulta ser una 2-Aproximación para el problema.
+
+        \subsubsection*{Pseudocódigo}
+            \includegraphics[width = 0.7\textwidth]{resources/code5.png}
+
+            Hablar de complejidad temporal.
+        
+        
 
 \end{document}

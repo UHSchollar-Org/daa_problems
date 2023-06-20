@@ -1,0 +1,10 @@
+function two_sat(cnf) do
+    g = build_graph(cnf)
+    scc = get_sccs(g)
+    
+    if have_contrad(scc) do
+        return Null
+    end else do
+        return set_assignments(scc)
+    end
+end
