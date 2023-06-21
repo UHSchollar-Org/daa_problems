@@ -149,3 +149,6 @@ third_problem/doc/doc.fdb_latexmk
 third_problem/doc/doc.fls
 third_problem/doc/doc.synctex.gz
 third_problem/An Approximation Algorithm for #k-SAT.pdf
+third_problem/doc/doc.bbl
+third_problem/doc/doc.blg
+third_problem/doc/doc.out
