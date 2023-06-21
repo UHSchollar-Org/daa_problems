@@ -4,6 +4,8 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{hyperref}
+\bibliographystyle{IEEEtran}
 \setlength{\parindent}{0cm}
 \lstset{
     numbers=left,
@@ -61,8 +63,10 @@
             son positivas, entonces $FNC$ será positiva; en caso contrario $FNC$ será negativa. La respuesta de $A$
             será la satisfacibilidad de $FNC$. 
 
-            Generar la $FNC$ de $\urcorner F$ se realiza en tiempo polinomial utilizando el algoritmo de $Tseitin$. Luego 
-            el recorrido por cada cláusula y cada literal se realiza en $O(cant\_clausulas)$, por lo tanto $A$ es polinomial. 
+            Generar la $FNC$ de $\urcorner F$ se realiza en tiempo polinomial utilizando el algoritmo de Tseitin \cite{Tseitin1970}. 
+            Luego 
+            el recorrido por cada cláusula y cada literal se realiza en $O(|cnf|)$, donde
+            $cnf$ es la forma normal conjuntiva de la fórmula inicial, por lo tanto $A$ es polinomial. 
             Luego el algoritmo $A$ tiene tiempo polinomial. Luego $P$ es $NP$.
 
         \subsubsection*{Reducción}
@@ -72,13 +76,36 @@
             
             El problema SAT, tiene como entrada una expresión lógica en forma normal conjuntiva ($FNC$). El problema $P$, 
             tiene como entrada una expresión lógica cualquiera $F$, podemos transformar $F$ en una entrada de SAT 
-            (en tiempo polinomial) aplicando el algoritmo de $Tseitin$ (explicado a continuación) sobre $\urcorner F$. 
+            (en tiempo polinomial) aplicando el algoritmo de Tseitin sobre $\urcorner F$. 
             Entonces $FNC$ será la entrada de SAT.
             
             Sea $S$ una salida del problema SAT, $S$ será la salida correcta de $P$, ya que como $FNC \cong \urcorner F$, entonces 
             $FNC = True \Rightarrow  F = False$ y $FNC = False \Rightarrow F = True$. Luego $S$ soluciona el problema $P$.
 
         \subsubsection*{Algoritmo de Tseitin}
+            El algoritmo de Tseitin se basa en la introducción de variables adicionales para representar 
+            subfórmulas de la fórmula original. La idea es reemplazar cada subfórmula de la fórmula original 
+            con una nueva variable, y luego agregar cláusulas que relacionen estas nuevas variables con las 
+            variables originales. Este proceso se repite recursivamente hasta que toda la fórmula original se ha 
+            reemplazado por variables nuevas.
+
+            Por ejemplo, consideremos la fórmula lógica $F = (p \Rightarrow q) \wedge (r \Rightarrow s)$.
+            Primero, se introducen dos variables nuevas, $A$ y $B$, para representar las subfórmulas $(p \Rightarrow q)$
+            y $(r \Rightarrow s)$, respectivamente. Luego, se agregan cláusulas que relacionan estas nuevas 
+            variables con las variables originales: 
+            \begin{itemize}
+                \item $A \vee \urcorner p \vee q$
+                \item $B \vee \urcorner r \vee s$
+                \item $F \equiv A \wedge B$
+            \end{itemize}
+
+            En estas cláusulas, la primera y sengunda cláusula representan las implicaciones
+            $(p \Rightarrow q)$ y $(r \Rightarrow s)$ como disyunciones de literales, y la tercera
+            cláusula establece que la fórmula $F$ es equivalente a la conjunción de las variables nuevas
+            $A$ y $B$. 
+
+            Este algoritmo se puede aplicar de manera recursiva a las subfórmulas $A$ y $B$, si es necesario.
+            El resultado final es una fórmula en $FNC$ que es lógicamente equivalente a la fórmula original.
     
 \section*{Soluciones para el problema}
 
@@ -329,8 +356,33 @@
         \subsubsection*{Pseudocódigo}
             \includegraphics[width = 0.7\textwidth]{resources/code5.png}
 
-            Hablar de complejidad temporal.
-        
-        
+            La complejidad temporal de este algoritmo está determina por la cantidad 
+            de veces que se ejecuta el ciclo y el costo de las operaciones realizadas
+            detro. 
+            
+            En cada iteración del ciclo al menos una cláusula es eliminada de la fórmula,
+            por lo que a lo sumo se ejecutará $m$ veces, donde $m$ es la cantidad de cláusulas
+            de la fórmula.
 
+            Luego seleccionar el literal más frecuente tiene costo $O(|cnf|)$. Para ello
+            puede realizarse un recorrido por $cnf$ contando las repeticiones de cada literal y 
+            guardando el valor en un array. Las variables se toman como enteros para indexar en $O(1)$ 
+            y sus negaciones ocuparán la posición $variable + len(variables)$, de modo que 
+            el array tendrá tamaño $2*len(variables)$.
+            Luego se recorre dicho array para seleccionar el literal más frecuente. Esto tiene
+            costo $O(2*len(variables))$, como $len(variables) \leq |cnf|$, entonces tiene costo $O(|cnf|)$.
+
+            Resta otorgar valor 1 al literal (0 a su opuesto) y eliminar las cláusulas en las que aparece. 
+            En un recorrido por la fórmula se puede detectar las cláusulas que contienen al literal y se puede otorgar
+            valor 0 a su opuesto, esto tiene complejidad $O(|cnf|)$. 
+            Luego teniendo las cláusulas a eliminar, se puede construir una nueva fórmula que no contenga 
+            dichas cláusulas, con complejidad $O(m)$. Entonces todo el proceso anterior tendrá
+            costp $O(|cnf| + m)$, como $m \leq |cnf|$, el costo sería $O(|cnf|)$.
+            
+            Finalmente el algoritmo tiene complejidad temporal $O(m*|cnf|)$. 
+
+\section*{Experimentación}
+    %%HABLAR AQUI DE COMO SE GENERARON LOS TESTS Y 
+
+\bibliography{ref}
 \end{document}
