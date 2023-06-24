@@ -382,7 +382,7 @@
             Finalmente el algoritmo tiene complejidad temporal $O(m*|cnf|)$. 
 
 \section*{Experimentación}
-    Se generaron [PONER CUANTOS CASOS SE GENERARON] casos de prueba para analizar los resultados arrojasdos por cada 
+    Se generaron al rededor de 50000 casos de prueba para analizar los resultados arrojasdos por cada 
     algoritmo, para así comprobar de manera práctica su efectividad. Los resultados fueron almacenados en archivos 
     $.json$ anexados junto al reporte.
     
@@ -392,7 +392,11 @@
 
     \includegraphics*[width = 0.9\textwidth]{resources/comp_algs.png}
     
-    [EXPLICAR LAS GRÁFICAS]
+    Dado que las variables para la comparativa son $n$ (cantidad de variables) y $m$ (cantidad de cláusulas) se decidió
+    agrupar los casos de prueba fijando a $n$, entonces se elabora una gráfica para cada una. Teniendo $n$ fijo el eje 
+    de las $x$ corresponderá al conjunto de $m$s evaluadas. Luego cada par $(n,m)$ se testeó con 5000 casos de pruebas
+    dando un conjunto de tiempos de finalización. de ese conjunto de resultados se determinó el valor máximo, mínimo 
+    y la media, estos datos se convierten en la representacón del eje $y$ en la gráfica.
 
 
 
